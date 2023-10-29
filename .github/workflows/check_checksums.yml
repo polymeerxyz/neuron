@@ -13,8 +13,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Generate checksums from artifacts
-        run:
-          ruby ./scripts/release-checksums.rb ${{ github.event.release.tag_name }} | tee generated_checksums.txt
+        run: ruby ./scripts/release-checksums.rb ${{ github.event.release.tag_name }} | tee generated_checksums.txt
 
       - name: Fetch checksums from release note
         run: |
@@ -31,9 +30,8 @@ jobs:
           body="${body//'%'/'%25'}"
           body="${body//$'\n'/'%0A'}"
           body="${body//$'\r'/'%0D'}"
-          echo ::set-output name=body::$body
+          echo "body=$body" >> $GITHUB_OUTPUT
 
       - uses: peter-evans/commit-comment@v2
         with:
           body: ${{ steps.comment_body.outputs.body }}
-
