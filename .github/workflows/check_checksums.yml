@@ -28,6 +28,7 @@ jobs:
         run: diff generated_checksums.txt release_note_checksums.txt
 
       - id: comment_body
+        shell: bash
         run: |
           body=$(cat generated_checksums.txt)
           body="${body//'%'/'%25'}"
