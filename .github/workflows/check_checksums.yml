@@ -37,5 +37,4 @@ jobs:
 
       - uses: peter-evans/commit-comment@v2
         with:
-          body: |
-            body: ${{ steps.comment_body.outputs.body }}
+          body: ${{ steps.comment_body.outputs.body }}
