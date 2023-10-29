@@ -30,13 +30,14 @@ jobs:
         run: diff generated_checksums.txt release_note_checksums.txt
 
       - id: comment_body
-        shell: bash
         run: |
-          body=$(cat generated_checksums.txt)
-          body="${body//'%'/'%25'}"
-          body="${body//$'\n'/'%0A'}"
-          body="${body//$'\r'/'%0D'}"
-          echo "body=$body" >> $GITHUB_OUTPUT
+          { 
+            body=$(cat generated_checksums.txt)
+            body="${body//'%'/'%25'}"
+            body="${body//$'\n'/'%0A'}"
+            body="${body//$'\r'/'%0D'}"
+            body=$body
+          } >> $GITHUB_OUTPUT
 
       - uses: peter-evans/commit-comment@v2
         with:
