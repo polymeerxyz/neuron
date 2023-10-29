@@ -1,6 +1,7 @@
 name: Check Checksums
 
 on:
+  push:
   release:
     types: [published, prereleased]
 
@@ -34,4 +35,5 @@ jobs:
 
       - uses: peter-evans/commit-comment@v2
         with:
-          body: ${{ steps.comment_body.outputs.body }}
+          body: |
+            body: ${{ steps.comment_body.outputs.body }}
