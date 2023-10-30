@@ -1,6 +1,7 @@
 name: Check Checksums
 
 on:
+  push:
   release:
     types: [published, prereleased]
 
@@ -11,6 +12,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: ${{ env.GITHUB_SHA }}
 
       - name: Generate checksums from artifacts
         run: ruby ./scripts/release-checksums.rb ${{ github.event.release.tag_name }} | tee generated_checksums.txt
