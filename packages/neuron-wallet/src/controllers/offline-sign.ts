@@ -99,7 +99,9 @@ export default class OfflineSignController {
           Transaction.fromObject(transaction),
           password,
           type === SignType.SendSUDT,
-          context
+          context,
+          // TODO make it configurable
+          true
         )
       }
 

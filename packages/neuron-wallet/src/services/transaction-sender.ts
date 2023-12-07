@@ -110,7 +110,8 @@ export default class TransactionSender {
     transaction: Transaction,
     password: string = '',
     skipLastInputs: boolean = true,
-    context?: RPC.RawTransaction[]
+    context?: RPC.RawTransaction[],
+    skipUnidentifiedLock = false
   ) {
     const wallet = this.walletService.get(walletID)
     const tx = Transaction.fromObject(transaction)
@@ -155,15 +156,16 @@ export default class TransactionSender {
       } else if (args.length === 42) {
         path = addressInfos.find(i => i.blake160 === args)!.path
       } else {
-        const addressInfo = AssetAccountInfo.findSignPathForCheque(addressInfos, args)
-        path = addressInfo?.path
+        try {
+          const addressInfo = AssetAccountInfo.findSignPathForCheque(addressInfos, args)
+          path = addressInfo?.path
+        } catch {
+          return undefined
+        }
       }
 
       const pathAndPrivateKey = pathAndPrivateKeys.find(p => p.path === path)
-      if (!pathAndPrivateKey) {
-        throw new Error('no private key found')
-      }
-      return pathAndPrivateKey.privateKey
+      return pathAndPrivateKey?.privateKey
     }
 
     const witnessSigningEntries: SignInfo[] = tx.inputs
@@ -185,10 +187,18 @@ export default class TransactionSender {
 
     for (const lockHash of lockHashes) {
       const witnessesArgs = witnessSigningEntries.filter(w => w.lockHash === lockHash)
+      const privateKey = findPrivateKey(witnessesArgs[0].lockArgs)
+
+      if (!privateKey && skipUnidentifiedLock) {
+        continue
+      }
+
+      if (!privateKey) {
+        throw new Error('no private key found')
+      }
+
       // A 65-byte empty signature used as placeholder
       witnessesArgs[0].witnessArgs.setEmptyLock()
-
-      const privateKey = findPrivateKey(witnessesArgs[0].lockArgs)
 
       const serializedWitnesses: (WitnessArgs | string)[] = witnessesArgs.map((value: SignInfo, index: number) => {
         const args = value.witnessArgs
@@ -235,7 +245,7 @@ export default class TransactionSender {
       }
     }
 
-    tx.witnesses = witnessSigningEntries.map(w => w.witness)
+    tx.witnesses = witnessSigningEntries.map(w => w.witness || '0x')
     tx.hash = txHash
 
     return tx
