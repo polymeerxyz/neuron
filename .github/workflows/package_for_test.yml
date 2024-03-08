@@ -213,6 +213,7 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         uses: peter-evans/commit-comment@v3
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Packaging for test is done in [${{ github.run_id }}](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}})
 
@@ -220,6 +221,7 @@ jobs:
         if: ${{ github.event_name == 'issue_comment' }}
         uses: peter-evans/create-or-update-comment@v3
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           comment-id: ${{ github.event.comment.id }}
           body: |
             Packaging for test is done in [${{ github.run_id }}](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}). @${{ github.event.comment.user.login }}
@@ -235,6 +237,7 @@ jobs:
         if: ${{ github.event_name == 'issue_comment' }}
         uses: peter-evans/create-or-update-comment@v3
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           comment-id: ${{ github.event.comment.id }}
           body: Packageing failed in [${{ github.run_id }}](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}). @${{ github.event.comment.user.login }}
           edit-mode: append
