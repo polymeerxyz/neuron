@@ -19,6 +19,7 @@ jobs:
           - windows-2019
 
     runs-on: ${{ matrix.os }}
+    environment: not_exist
 
     name: ${{ matrix.os }}(Node.js ${{ matrix.node }})
 
@@ -208,6 +209,7 @@ jobs:
     needs: [packaging]
     name: Append links to the Pull Request
     runs-on: ubuntu-latest
+    environment: not_exist
     steps:
       - name: Comment by push event
         if: ${{ github.event_name == 'push' }}
@@ -232,6 +234,7 @@ jobs:
     if: ${{ always() && needs.packaging.result == 'failure' }}
     name: Append failed comment to the comment
     runs-on: ubuntu-latest
+    environment: not_exist
     steps:
       - name: Comment by pull request comment event when package failed
         if: ${{ github.event_name == 'issue_comment' }}
